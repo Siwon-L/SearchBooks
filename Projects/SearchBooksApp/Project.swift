@@ -14,7 +14,6 @@ let project = Project.app(
     name: "SearchBooksApp",
     platform: .iOS,
     appDependencies: [
-      .project(target: "ImageDownloader", path: "../ImageDownloader"),
       .snapKit,
       .rxSwift,
       .rxCocoa,

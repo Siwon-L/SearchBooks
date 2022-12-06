@@ -10,7 +10,6 @@ import ProjectDescription
 let workspace = Workspace(
   name: "SearchBooks",
   projects: [
-    "Projects/SearchBooksApp",
-    "Projects/ImageDownloader"
+    "Projects/SearchBooksApp"
   ]
 )
