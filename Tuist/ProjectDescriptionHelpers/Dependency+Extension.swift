@@ -13,5 +13,6 @@ public extension TargetDependency {
   static let rxCocoa: TargetDependency = .external(name: "RxCocoa")
   static let snapKit: TargetDependency = .external(name: "SnapKit")
   static let reactorKit: TargetDependency = .external(name: "ReactorKit")
+  static let kingfisher: TargetDependency = .external(name: "Kingfisher")
 }
 

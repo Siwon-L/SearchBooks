@@ -18,7 +18,8 @@ let project = Project.app(
       .rxSwift,
       .rxCocoa,
       .rxRelay,
-      .reactorKit
+      .reactorKit,
+      .kingfisher
     ],
     testDependencies: [
       .rxSwift,
