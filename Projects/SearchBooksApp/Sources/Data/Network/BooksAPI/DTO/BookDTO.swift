@@ -19,3 +19,18 @@ struct BookDTO: Codable {
   let description: String
   let pubdate: String
 }
+
+extension BookDTO {
+  var toDomain: Book {
+    return Book(
+      title: title,
+      image: image,
+      author: author,
+      discount: discount,
+      publisher: publisher,
+      isbn: isbn,
+      description: description,
+      pubdate: pubdate
+    )
+  }
+}

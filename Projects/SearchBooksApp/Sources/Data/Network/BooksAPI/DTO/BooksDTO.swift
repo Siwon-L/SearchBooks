@@ -15,3 +15,12 @@ struct BooksDTO: Codable {
   let display: Int
   let items: [BookDTO]
 }
+
+extension BooksDTO {
+  var toDomain: Books {
+    return Books(
+      total: self.total,
+      items: self.items.map { $0.toDomain }
+    )
+  }
+}
