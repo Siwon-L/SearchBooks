@@ -13,11 +13,13 @@ enum UserInformation {
     static let secret = "2Tk3UfYTUc"
 }
 
+enum Sort: String {
+  case sim = "sim"
+  case date = "date"
+}
+
 enum BooksEndpointAPI {
-  enum Sort: String {
-    case sim = "sim"
-    case date = "date"
-  }
+  
   
   private var baseURL: String {
     return "https://openapi.naver.com"
