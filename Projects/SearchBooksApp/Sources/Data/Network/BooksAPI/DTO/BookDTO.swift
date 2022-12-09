@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BookDTO {
+struct BookDTO: Codable {
   let title: String
   let link: String
   let image: String

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BooksDTO {
+struct BooksDTO: Codable {
   let lastBuildDate: String
   let total: Int
   let start: Int
