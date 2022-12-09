@@ -11,6 +11,7 @@ import Foundation
 import RxSwift
 
 protocol NetworkServicable {
+  func request(endpoint: Endpoint) -> Observable<Data>
   func request(endpoint: Endpoint, callbackQueue: CallbackQueue) -> Observable<Data>
 }
 
@@ -21,9 +22,13 @@ final class NetworkService: NetworkServicable {
     self.urlSession = urlSession
   }
   
+  func request(endpoint: Endpoint) -> Observable<Data> {
+    return request(endpoint: endpoint, callbackQueue: .mainCurrentOrAsync)
+  }
+  
   func request(
     endpoint: Endpoint,
-    callbackQueue: CallbackQueue = .mainCurrentOrAsync
+    callbackQueue: CallbackQueue
   ) -> Observable<Data> {
     return Single<Data>.create { [weak self] single in
       let callback: (Result<Data, Error>) -> Void = { result in
