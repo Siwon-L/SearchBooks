@@ -25,9 +25,9 @@ enum BooksEndpointAPI {
   
   case searchBooks(
     query: String,
-    display: Int = 10,
-    start: Int = 1,
-    sort: Sort = .sim
+    display: Int,
+    start: Int,
+    sort: Sort
   )
   
   var asEndpoint: Endpoint {
