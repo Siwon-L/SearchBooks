@@ -43,7 +43,12 @@ final class NetworkServiceTest: XCTestCase {
       )!
       return (data, response)
     }
-    let endpoint = BooksEndpointAPI.searchBooks(query: "책").asEndpoint
+    let endpoint = BooksEndpointAPI.searchBooks(
+      query: "책",
+      display: 10,
+      start: 1,
+      sort: .sim
+    ).asEndpoint
     
     // when
     sut.request(endpoint: endpoint)
@@ -74,7 +79,12 @@ final class NetworkServiceTest: XCTestCase {
     }
 
     // when
-    let endpoint = BooksEndpointAPI.searchBooks(query: "책").asEndpoint
+    let endpoint = BooksEndpointAPI.searchBooks(
+      query: "책",
+      display: 10,
+      start: 1,
+      sort: .sim
+    ).asEndpoint
 
     sut.request(endpoint: endpoint)
       .subscribe(onNext: { _ in
