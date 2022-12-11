@@ -21,16 +21,26 @@ final class StubNetworkService: NetworkServicable {
     self.isSuccess = isSuccess
   }
   
-  func request(endpoint: Endpoint) -> RxSwift.Observable<Data> {
-    return request(endpoint: endpoint, callbackQueue: .mainCurrentOrAsync)
+  func request(endpoint: Endpoint) -> Observable<Data> {
+    return Single.create { single in
+      self.request(endpoint: endpoint, callbackQueue: .mainCurrentOrAsync) { result in
+        switch result {
+        case .success(let data):
+          single(.success(data))
+        case .failure(let error):
+          single(.failure(error))
+        }
+      }
+      return Disposables.create()
+    }.asObservable()
   }
   
-  func request(endpoint: Endpoint, callbackQueue: SearchBooksApp.CallbackQueue) -> RxSwift.Observable<Data> {
+  func request(endpoint: SearchBooksApp.Endpoint, callbackQueue: SearchBooksApp.CallbackQueue, completion: @escaping (Result<Data, Error>) -> Void) {
     requestCallCount += 1
     if isSuccess {
-      return .just(data)
+      callbackQueue.execute { completion(.success(self.data)) }
     } else {
-      return .error(SearchServiceError.network(reason: .badRequest))
+      callbackQueue.execute { completion(.failure(SearchServiceError.network(reason: .badRequest))) }
     }
   }
 }
