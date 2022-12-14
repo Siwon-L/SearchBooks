@@ -12,11 +12,7 @@ import RxSwift
 
 protocol NetworkServicable {
   func request(endpoint: Endpoint) -> Observable<Data>
-  func request(
-    endpoint: Endpoint,
-    callbackQueue: CallbackQueue,
-    completion: @escaping (Result<Data, Error>) -> Void
-  )
+  func request(endpoint: Endpoint) async throws -> Data
 }
 
 final class NetworkService: NetworkServicable {
@@ -27,52 +23,34 @@ final class NetworkService: NetworkServicable {
   }
   
   func request(endpoint: Endpoint) -> Observable<Data> {
-    return Single<Data>.create { [weak self] single in
-      self?.request(endpoint: endpoint, callbackQueue: .mainCurrentOrAsync, completion: { result in
-        switch result {
-        case .success(let data):
+    return Single<Data>.create { single in
+      Task { [weak self] in
+        do {
+          guard let data = try await self?.request(endpoint: endpoint) else { return }
           single(.success(data))
-        case .failure(let error):
+        } catch {
           single(.failure(error))
         }
-      })
+      }
       return Disposables.create()
     }.asObservable()
   }
   
-  func request(
-    endpoint: Endpoint,
-    callbackQueue: CallbackQueue,
-    completion: @escaping (Result<Data, Error>) -> Void
-  ) {
-    let callback: (Result<Data, Error>) -> Void = { result in
-      callbackQueue.execute { completion(result) }
+  func request(endpoint: Endpoint) async throws -> Data {
+    let urlRequest = try endpoint.create()
+    let (data, response) = try await urlSession.data(for: urlRequest)
+    guard let response = response as? HTTPURLResponse else {
+      throw SearchServiceError.network(reason: .invalidateResponse)
     }
-    do {
-      let urlRequest = try endpoint.create()
-      
-      urlSession.dataTask(with: urlRequest) { data, response, error in
-        guard error == nil, let data = data else {
-          callback(.failure(SearchServiceError.network(reason: .errorIsOccurred(error.debugDescription))))
-          return
-        }
-        guard let response = response as? HTTPURLResponse else {
-          callback(.failure(SearchServiceError.network(reason: .invalidateResponse)))
-          return
-        }
-        
-        switch response.statusCode {
-        case 200..<300: callback(.success(data))
-        case 400: callback(.failure(SearchServiceError.network(reason: .badRequest)))
-        case 401: callback(.failure(SearchServiceError.network(reason:.unauthorized)))
-        case 404: callback(.failure(SearchServiceError.network(reason:.notFound)))
-        case 500: callback(.failure(SearchServiceError.network(reason:.internalServerError)))
-        case 503: callback(.failure(SearchServiceError.network(reason:.serviceUnavailable)))
-        default: callback(.failure(SearchServiceError.network(reason:.unknown)))
-        }
-      }.resume()
-    } catch {
-      callbackQueue.execute { completion(.failure(error)) }
+    
+    switch response.statusCode {
+    case 200..<300: return data
+    case 400: throw SearchServiceError.network(reason: .badRequest)
+    case 401: throw SearchServiceError.network(reason:.unauthorized)
+    case 404: throw SearchServiceError.network(reason:.notFound)
+    case 500: throw SearchServiceError.network(reason:.internalServerError)
+    case 503: throw SearchServiceError.network(reason:.serviceUnavailable)
+    default: throw SearchServiceError.network(reason:.unknown)
     }
   }
 }

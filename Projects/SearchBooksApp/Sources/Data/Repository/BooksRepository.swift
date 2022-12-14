@@ -48,27 +48,12 @@ final class BooksRepository: BooksRepositorable {
     var books: [Book?] = []
     try await withThrowingTaskGroup(of: Book?.self, body: { group in
       for endpoint in endpoints {
-        group.addTask {
-          async let book = try await withCheckedThrowingContinuation({ [weak self] continuation in
-            guard let self = self else { return }
-            self.networkService.request(
-              endpoint: endpoint,
-              callbackQueue: .dispatch(.global())
-            ) { result in
-              switch result {
-              case .success(let data):
-                do {
-                  let booksDTO = try self.decoder.decode(BooksDTO.self, from: data)
-                  continuation.resume(returning: booksDTO.items.first?.toDomain)
-                } catch {
-                  continuation.resume(throwing: SearchServiceError.decode(reason: .decodeFailure(BooksDTO.self)))
-                }
-              case .failure(let error):
-                continuation.resume(throwing: error)
-              }
-            }
-          })
-          return try await book
+        group.addTask { [weak self] in
+          guard let data = try await self?.networkService.request(endpoint: endpoint) else { return nil }
+          guard let book = try? self?.decoder.decode(BooksDTO.self, from: data) else {
+            throw SearchServiceError.decode(reason: .decodeFailure(BooksDTO.self))
+          }
+          return book.items.first?.toDomain
         }
       }
       for try await book in group {
