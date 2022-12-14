@@ -23,11 +23,11 @@ final class StubNetworkService: NetworkServicable {
   
   func request(endpoint: Endpoint) -> Observable<Data> {
     return Single.create { single in
-      self.request(endpoint: endpoint, callbackQueue: .mainCurrentOrAsync) { result in
-        switch result {
-        case .success(let data):
+      Task {
+        do {
+          let data = try await self.request(endpoint: endpoint)
           single(.success(data))
-        case .failure(let error):
+        } catch {
           single(.failure(error))
         }
       }
@@ -35,12 +35,12 @@ final class StubNetworkService: NetworkServicable {
     }.asObservable()
   }
   
-  func request(endpoint: SearchBooksApp.Endpoint, callbackQueue: SearchBooksApp.CallbackQueue, completion: @escaping (Result<Data, Error>) -> Void) {
+  func request(endpoint: SearchBooksApp.Endpoint) async throws -> Data {
     requestCallCount += 1
     if isSuccess {
-      callbackQueue.execute { completion(.success(self.data)) }
+      return data
     } else {
-      callbackQueue.execute { completion(.failure(SearchServiceError.network(reason: .badRequest))) }
+      throw SearchServiceError.network(reason: .badRequest)
     }
   }
 }

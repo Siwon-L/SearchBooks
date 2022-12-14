@@ -53,6 +53,7 @@ final class BooksRepositoryTest: XCTestCase {
     // given
     networkService = .init(data: dummyData, isSuccess: false)
     sut = BooksRepository(networkService: networkService, favoritesBookStorage: storage, decoder: .init())
+    let expectation = XCTestExpectation()
     // when
     sut.searchBooks(
       query: "Book",
@@ -67,13 +68,16 @@ final class BooksRepositoryTest: XCTestCase {
         // then
         XCTAssertEqual(error.failureReason, "서비스 이용에 불편을 드려 죄송합니다. 잠시 후 다시 시도해주세요.")
         XCTAssertEqual(self.networkService.requestCallCount, 1)
+        expectation.fulfill()
       }.disposed(by: disposeBag)
+    wait(for: [expectation], timeout: 5.0)
   }
   
   func test_test_searchBooks을_호출했을_때_네트워크_통신에_성공했으면_Books를_방출해야한다() {
     // given
     networkService = .init(data: dummyData, isSuccess: true)
     sut = BooksRepository(networkService: networkService, favoritesBookStorage: storage, decoder: .init())
+    let expectation = XCTestExpectation()
     // when
     sut.searchBooks(
       query: "Book",
@@ -85,9 +89,11 @@ final class BooksRepositoryTest: XCTestCase {
         // then
         XCTAssertEqual(self.networkService.requestCallCount, 1)
         XCTAssertEqual(books.items.first!.title, "Book")
+        expectation.fulfill()
       }, onError: { error in
         XCTFail(error.localizedDescription)
       }).disposed(by: disposeBag)
+    wait(for: [expectation], timeout: 5.0)
   }
   
   func test_searchFavoritesBooks을_호출했을_때_네트워크_통신에_실패했으면_Error를_방출해야한다() async {
