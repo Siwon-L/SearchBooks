@@ -40,6 +40,8 @@ final class BooksRepositoryTest: XCTestCase {
     dummyData = try! JSONEncoder().encode(booksDTO)
     disposeBag = .init()
     storage = .init(isbns: ["123", "111", "000"])
+    networkService = .init(data: dummyData, isSuccess: true)
+    sut = BooksRepository(networkService: networkService, favoritesBookStorage: storage, decoder: .init())
   }
   
   override func tearDownWithError() throws {
@@ -125,5 +127,23 @@ final class BooksRepositoryTest: XCTestCase {
     } catch {
       XCTFail(error.localizedDescription)
     }
+  }
+  
+  func test_addFavoritesBook를_통해_즐겨찾기한_책의_isbn을_추가하면_storage_isbns에_input이_포함되어있어야한다() {
+    // given
+    let input = "333"
+    // when
+    sut.addFavoritesBook(isbn: input)
+    // then
+    XCTAssertTrue(storage.isbns.contains(input))
+  }
+  
+  func test_removeFavoritesBook를_통해_즐겨찾기한_책의_isbn을_삭제하면_storage_isbns에_input이_포함되어있지_않아야한다() {
+    // given
+    let input = "123"
+    // when
+    sut.removeFavoritesBook(isbn: input)
+    // then
+    XCTAssertFalse(storage.isbns.contains(input))
   }
 }

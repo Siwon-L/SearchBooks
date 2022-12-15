@@ -14,6 +14,8 @@ import RxSwift
 final class MockBooksRepository: BooksRepositorable {
   var searchBooksCallCount = 0
   var searchFavoritesBooksCallCount = 0
+  var addFavoritesBookCallCount = 0
+  var removeFavoritesBookCallCount = 0
   
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books> {
     searchBooksCallCount += 1
@@ -23,5 +25,13 @@ final class MockBooksRepository: BooksRepositorable {
   func searchFavoritesBooks() async throws -> [Book?] {
     searchFavoritesBooksCallCount += 1
     return []
+  }
+  
+  func addFavoritesBook(isbn: String) {
+    addFavoritesBookCallCount += 1
+  }
+  
+  func removeFavoritesBook(isbn: String) {
+    removeFavoritesBookCallCount += 1
   }
 }
