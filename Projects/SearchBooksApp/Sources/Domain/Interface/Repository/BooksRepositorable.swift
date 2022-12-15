@@ -13,4 +13,6 @@ import RxSwift
 protocol BooksRepositorable {
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books>
   func searchFavoritesBooks() async throws -> [Book?]
+  func addFavoritesBook(isbn: String)
+  func removeFavoritesBook(isbn: String)
 }

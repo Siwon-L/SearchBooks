@@ -14,6 +14,8 @@ protocol SearchBookUseCaseable {
   func searchBooks(query: String) -> Observable<Books>
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books>
   func searchFavoritesBooks() async throws -> [Book?]
+  func addFavoritesBook(isbn: String)
+  func removeFavoritesBook(isbn: String)
 }
 
 final class SearchBookUseCase: SearchBookUseCaseable {
@@ -38,5 +40,13 @@ final class SearchBookUseCase: SearchBookUseCaseable {
   
   func searchFavoritesBooks() async throws -> [Book?] {
     return try await repository.searchFavoritesBooks()
+  }
+  
+  func addFavoritesBook(isbn: String) {
+    repository.addFavoritesBook(isbn: isbn)
+  }
+  
+  func removeFavoritesBook(isbn: String) {
+    repository.removeFavoritesBook(isbn: isbn)
   }
 }

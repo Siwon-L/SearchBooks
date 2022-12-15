@@ -62,4 +62,12 @@ final class BooksRepository: BooksRepositorable {
     })
     return books
   }
+  
+  func addFavoritesBook(isbn: String) {
+    favoritesBookStorage.addValue(isbn)
+  }
+  
+  func removeFavoritesBook(isbn: String) {
+    favoritesBookStorage.removeValue(isbn)
+  }
 }
