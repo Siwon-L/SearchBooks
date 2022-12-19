@@ -22,9 +22,9 @@ final class MockBooksRepository: BooksRepositorable {
     return .empty()
   }
   
-  func searchFavoritesBooks() async throws -> [Book?] {
+  func searchFavoritesBooks() -> Observable<[Book?]> {
     searchFavoritesBooksCallCount += 1
-    return []
+    return .empty()
   }
   
   func addFavoritesBook(isbn: String) {

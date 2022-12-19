@@ -98,35 +98,42 @@ final class BooksRepositoryTest: XCTestCase {
     wait(for: [expectation], timeout: 5.0)
   }
   
-  func test_searchFavoritesBooks을_호출했을_때_네트워크_통신에_실패했으면_Error를_방출해야한다() async {
+  func test_searchFavoritesBooks을_호출했을_때_네트워크_통신에_실패했으면_Error를_방출해야한다() {
     // given
     networkService = .init(data: dummyData, isSuccess: false)
     sut = BooksRepository(networkService: networkService, favoritesBookStorage: storage, decoder: .init())
+    let expectation = XCTestExpectation()
     // when
-    do {
-      let _ = try await sut.searchFavoritesBooks()
-      XCTFail()
-    } catch {
-      // then
-      let error = error as! SearchServiceError
-      XCTAssertEqual(self.networkService.requestCallCount, 3)
-      XCTAssertEqual(error.failureReason, "서비스 이용에 불편을 드려 죄송합니다. 잠시 후 다시 시도해주세요.")
-    }
+    _ = sut.searchFavoritesBooks()
+      .subscribe { _ in
+        XCTFail()
+      } onError: { error in
+        let error = error as! SearchServiceError
+        // then
+        XCTAssertEqual(error.failureReason, "서비스 이용에 불편을 드려 죄송합니다. 잠시 후 다시 시도해주세요.")
+        XCTAssertEqual(self.networkService.requestCallCount, 3)
+        expectation.fulfill()
+      }
+    wait(for: [expectation], timeout: 5.0)
   }
   
-  func test_searchFavoritesBooks을_호출했을_때_네트워크_통신에_성공했으면_Book배열을_방출해야한다() async {
+  func test_searchFavoritesBooks을_호출했을_때_네트워크_통신에_성공했으면_Book배열을_방출해야한다() {
     // given
     networkService = .init(data: dummyData, isSuccess: true)
     sut = BooksRepository(networkService: networkService, favoritesBookStorage: storage, decoder: .init())
+    let expectation = XCTestExpectation()
     // when
-    do {
-      // then
-      let books = try await sut.searchFavoritesBooks()
-      XCTAssertEqual(books.count, 3)
-      XCTAssertEqual(self.networkService.requestCallCount, 3)
-    } catch {
-      XCTFail(error.localizedDescription)
-    }
+    _ = sut.searchFavoritesBooks()
+      .subscribe { books in
+        // then
+        XCTAssertEqual(books.count, 3)
+        XCTAssertEqual(self.networkService.requestCallCount, 3)
+        expectation.fulfill()
+      } onError: { error in
+        let error = error as! SearchServiceError
+        XCTFail(error.localizedDescription)
+      }
+    wait(for: [expectation], timeout: 5.0)
   }
   
   func test_addFavoritesBook를_통해_즐겨찾기한_책의_isbn을_추가하면_storage_isbns에_input이_포함되어있어야한다() {

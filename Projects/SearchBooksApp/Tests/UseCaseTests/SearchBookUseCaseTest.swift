@@ -33,11 +33,11 @@ final class SearchBookUseCaseTest: XCTestCase {
     XCTAssertEqual(booksRepository.searchBooksCallCount, 1)
   }
   
-  func test_searchFavoritesBooks이_호출되었을_때_repository의_searchFavoritesBooks가_호출되어야_한다() async {
+  func test_searchFavoritesBooks이_호출되었을_때_repository의_searchFavoritesBooks가_호출되어야_한다() {
     // given
     
     // when
-    _ = try! await sut.searchFavoritesBooks()
+    _ = sut.searchFavoritesBooks()
     // then
     XCTAssertEqual(booksRepository.searchFavoritesBooksCallCount, 1)
   }
