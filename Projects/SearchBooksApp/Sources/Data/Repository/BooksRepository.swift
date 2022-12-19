@@ -42,7 +42,31 @@ final class BooksRepository: BooksRepositorable {
       .map { $0.toDomain }
   }
   
-  func searchFavoritesBooks() async throws -> [Book?] {
+  func searchFavoritesBooks() -> Observable<[Book?]> {
+    return Single<[Book?]>.create { single in
+      Task { [weak self] in
+        do {
+          guard let books = try await self?.searchFavoritesBooks() else { return }
+          single(.success(books))
+        } catch {
+          single(.failure(error))
+        }
+      }
+      return Disposables.create()
+    }.asObservable()
+  }
+  
+  func addFavoritesBook(isbn: String) {
+    favoritesBookStorage.addValue(isbn)
+  }
+  
+  func removeFavoritesBook(isbn: String) {
+    favoritesBookStorage.removeValue(isbn)
+  }
+}
+
+extension BooksRepository {
+  private func searchFavoritesBooks() async throws -> [Book?] {
     let endpoints = favoritesBookStorage.getValue
       .map { BooksEndpointAPI.searchBook(dIsbn: $0).asEndpoint }
     var books: [Book?] = []
@@ -61,13 +85,5 @@ final class BooksRepository: BooksRepositorable {
       }
     })
     return books
-  }
-  
-  func addFavoritesBook(isbn: String) {
-    favoritesBookStorage.addValue(isbn)
-  }
-  
-  func removeFavoritesBook(isbn: String) {
-    favoritesBookStorage.removeValue(isbn)
   }
 }

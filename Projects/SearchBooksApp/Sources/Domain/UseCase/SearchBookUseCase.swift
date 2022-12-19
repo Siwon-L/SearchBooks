@@ -13,7 +13,7 @@ import RxSwift
 protocol SearchBookUseCaseable {
   func searchBooks(query: String) -> Observable<Books>
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books>
-  func searchFavoritesBooks() async throws -> [Book?]
+  func searchFavoritesBooks() -> Observable<[Book?]>
   func addFavoritesBook(isbn: String)
   func removeFavoritesBook(isbn: String)
 }
@@ -38,8 +38,8 @@ final class SearchBookUseCase: SearchBookUseCaseable {
     )
   }
   
-  func searchFavoritesBooks() async throws -> [Book?] {
-    return try await repository.searchFavoritesBooks()
+  func searchFavoritesBooks() -> Observable<[Book?]> {
+    return repository.searchFavoritesBooks()
   }
   
   func addFavoritesBook(isbn: String) {
