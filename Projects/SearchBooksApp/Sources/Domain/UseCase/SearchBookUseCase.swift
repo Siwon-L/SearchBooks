@@ -11,7 +11,7 @@ import Foundation
 import RxSwift
 
 protocol SearchBookUseCaseable {
-  func searchBooks(query: String) -> Observable<Books>
+  func searchBooks(query: String, sort: Sort) -> Observable<Books>
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books>
   func searchFavoritesBooks() -> Observable<[Book?]>
   func addFavoritesBook(isbn: String)
@@ -25,8 +25,8 @@ final class SearchBookUseCase: SearchBookUseCaseable {
     self.repository = repository
   }
   
-  func searchBooks(query: String) -> Observable<Books> {
-    return searchBooks(query: query, display: 10, start: 1, sort: .sim)
+  func searchBooks(query: String, sort: Sort) -> Observable<Books> {
+    return searchBooks(query: query, display: 10, start: 1, sort: sort)
   }
   
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books> {
