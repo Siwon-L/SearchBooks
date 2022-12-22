@@ -13,11 +13,6 @@ enum UserInformation {
     static let secret = "2Tk3UfYTUc"
 }
 
-enum Sort: String {
-  case sim = "sim"
-  case date = "date"
-}
-
 enum BooksEndpointAPI {
   
   
