@@ -11,4 +11,6 @@ import Foundation
 struct Books {
   let total: Int
   let items: [Book]
+  let start: Int
+  let display: Int
 }

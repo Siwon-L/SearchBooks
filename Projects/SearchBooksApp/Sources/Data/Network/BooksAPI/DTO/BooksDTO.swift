@@ -19,8 +19,10 @@ struct BooksDTO: Codable {
 extension BooksDTO {
   var toDomain: Books {
     return Books(
-      total: self.total,
-      items: self.items.map { $0.toDomain }
+      total: total,
+      items: items.map { $0.toDomain },
+      start: start,
+      display: display
     )
   }
 }
