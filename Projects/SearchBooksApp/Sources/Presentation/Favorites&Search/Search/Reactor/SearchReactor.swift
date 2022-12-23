@@ -32,8 +32,9 @@ final class SearchReactor: Reactor {
     var books: [Book] = []
     var sort: Sort = .sim
     var errorMessage: String? = nil
-    var query: String? = nil
-    var page = 1
+    fileprivate var query: String? = nil
+    fileprivate var nextStart = 0
+    fileprivate var display = 0
   }
   
   init(useCase: SearchBookUseCaseable) {
@@ -49,11 +50,10 @@ final class SearchReactor: Reactor {
         .catch { .just(.onError($0)) }
     case .loadNextPage:
       guard let query = currentState.query else { return .never() }
-      print(currentState.page)
       return useCase.searchBooks(
         query: query,
-        display: 10,
-        start: currentState.page,
+        display: currentState.display,
+        start: currentState.nextStart,
         sort: currentState.sort)
       .map { Mutation.addBooks($0) }
       .catch { .just(.onError($0)) }
@@ -82,17 +82,14 @@ final class SearchReactor: Reactor {
       newState.books = books.items
       newState.bookCount = books.total
       newState.query = query
-      newState.page = 1
+      newState.nextStart = books.start + books.display
+      newState.display = books.display
       return newState
     case .addBooks(let books):
       var newState = state
-      if newState.page > 1000 {
-        return newState
-      } else {
-        newState.books += books.items
-        newState.page += 10
-        return newState
-      }
+      newState.books += books.items
+      newState.nextStart += books.display
+      return newState
     case .onError(let error):
       var newState = state
       guard let error = error as? SearchServiceError else { return newState }
