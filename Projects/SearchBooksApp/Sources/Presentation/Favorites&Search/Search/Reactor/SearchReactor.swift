@@ -16,7 +16,7 @@ final class SearchReactor: Reactor {
   
   enum Action {
     case searchBooks(String)
-    case loadNextPage
+    case loadNextPage(Int)
     case changeSort
   }
   
@@ -48,7 +48,9 @@ final class SearchReactor: Reactor {
       let result = useCase.searchBooks(query: query, sort: currentState.sort)
       return result.map { Mutation.setBooks($0, query) }
         .catch { .just(.onError($0)) }
-    case .loadNextPage:
+    case .loadNextPage(let prefetchRow):
+      let paginationRow = currentState.nextStart - currentState.display / 3
+      guard prefetchRow >  paginationRow else { return .never() }
       guard let query = currentState.query else { return .never() }
       return useCase.searchBooks(
         query: query,

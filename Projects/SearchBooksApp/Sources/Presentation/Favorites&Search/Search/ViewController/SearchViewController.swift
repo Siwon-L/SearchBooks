@@ -82,16 +82,9 @@ final class SearchViewController: UIViewController {
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     
-    booksTableView.rx.didScroll
-      .withUnretained(self)
-      .map({ owner, _ in
-        let offset = owner.booksTableView.contentOffset.y
-        let contentHeight = owner.booksTableView.contentSize.height
-        return offset + owner.booksTableView.frame.height > contentHeight * 0.7
-      })
-      .distinctUntilChanged()
-      .filter { $0 }
-      .map { _ in SearchReactor.Action.loadNextPage }
+    booksTableView.rx.prefetchRows
+      .compactMap { $0.first?.row }
+      .map { SearchReactor.Action.loadNextPage($0) }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
   }
