@@ -26,7 +26,7 @@ final class SearchBookUseCase: SearchBookUseCaseable {
   }
   
   func searchBooks(query: String, sort: Sort) -> Observable<Books> {
-    return searchBooks(query: query, display: 10, start: 1, sort: sort)
+    return searchBooks(query: query, display: 20, start: 1, sort: sort)
   }
   
   func searchBooks(query: String, display: Int, start: Int, sort: Sort) -> Observable<Books> {
