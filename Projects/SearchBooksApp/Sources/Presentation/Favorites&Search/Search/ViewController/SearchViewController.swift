@@ -39,7 +39,6 @@ final class SearchViewController: UIViewController {
     view.backgroundColor = .systemBackground
     
     searchBar.then {
-      $0.showsCancelButton = true
       $0.placeholder = "검색어를 입력하세요."
     }
     
