@@ -25,6 +25,7 @@ final class SearchReactor: Reactor {
     case setBooks(Books, String)
     case addBooks(Books)
     case onError(Error)
+    case setLoading(Bool)
   }
   
   struct State {
@@ -35,6 +36,7 @@ final class SearchReactor: Reactor {
     fileprivate var query: String? = nil
     fileprivate var nextStart = 0
     fileprivate var display = 0
+    fileprivate var isLoding = false
   }
   
   init(useCase: SearchBookUseCaseable) {
@@ -45,20 +47,27 @@ final class SearchReactor: Reactor {
   func mutate(action: Action) -> Observable<Mutation> {
     switch action {
     case .searchBooks(let query):
-      let result = useCase.searchBooks(query: query, sort: currentState.sort)
-      return result.map { Mutation.setBooks($0, query) }
-        .catch { .just(.onError($0)) }
+      return Observable.concat([
+        .just(.setLoading(true)),
+        useCase.searchBooks(query: query, sort: currentState.sort)
+          .map { Mutation.setBooks($0, query) }
+          .catch { .just(.onError($0)) },
+        .just(.setLoading(false))
+      ])
     case .loadNextPage(let prefetchRow):
-      let paginationRow = currentState.nextStart - currentState.display / 3
-      guard prefetchRow >  paginationRow else { return .never() }
+      guard checkLoadable(prefetchRow: prefetchRow) else { return .never() }
       guard let query = currentState.query else { return .never() }
-      return useCase.searchBooks(
-        query: query,
-        display: currentState.display,
-        start: currentState.nextStart,
-        sort: currentState.sort)
-      .map { Mutation.addBooks($0) }
-      .catch { .just(.onError($0)) }
+      return Observable.concat([
+        .just(.setLoading(true)),
+        useCase.searchBooks(
+          query: query,
+          display: currentState.display,
+          start: currentState.nextStart,
+          sort: currentState.sort)
+        .map { Mutation.addBooks($0) }
+          .catch { .just(.onError($0)) },
+        .just(.setLoading(false))
+      ])
     case .changeSort:
       guard let query = currentState.query else { return .never() }
       let result = useCase.searchBooks(
@@ -74,13 +83,12 @@ final class SearchReactor: Reactor {
   }
   
   func reduce(state: State, mutation: Mutation) -> State {
+    var newState = state
     switch mutation {
     case .setSort:
-      var newState = state
       newState.sort = newState.sort == .sim ? .date : .sim
       return newState
     case .setBooks(let books, let query):
-      var newState = state
       newState.books = books.items
       newState.bookCount = books.total
       newState.query = query
@@ -88,15 +96,27 @@ final class SearchReactor: Reactor {
       newState.display = books.display
       return newState
     case .addBooks(let books):
-      var newState = state
       newState.books += books.items
       newState.nextStart += books.display
       return newState
+    case .setLoading(let isLoading):
+      newState.isLoding = isLoading
+      return newState
     case .onError(let error):
-      var newState = state
       guard let error = error as? SearchServiceError else { return newState }
       newState.errorMessage = error.failureReason
       return newState
     }
   }
 }
+
+private extension SearchReactor {
+  func checkLoadable(prefetchRow: Int) -> Bool {
+    let paginationRow = currentState.nextStart - currentState.display / 3
+    return currentState.nextStart <= currentState.bookCount
+    && currentState.nextStart <= 1000
+    && !currentState.isLoding
+    && prefetchRow > paginationRow
+  }
+}
+

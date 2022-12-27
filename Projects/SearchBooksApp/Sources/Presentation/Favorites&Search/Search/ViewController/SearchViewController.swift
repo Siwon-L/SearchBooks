@@ -114,7 +114,6 @@ final class SearchViewController: UIViewController {
       .filter { $0 != nil }
       .bind(to: showErrorAlert)
       .disposed(by: disposeBag)
-    
   }
   
   private var showErrorAlert: Binder<String?> {
