@@ -21,6 +21,7 @@ final class BookCell: UITableViewCell {
   private let publisherLabel = UILabel()
   private let pubdateLabel = UILabel()
   private let infoStackView = UIStackView()
+  private let favoritesButton = UIButton()
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,6 +34,13 @@ final class BookCell: UITableViewCell {
   }
   
   private func attribute() {
+    selectionStyle = .none
+    
+    favoritesButton.then {
+      $0.tintColor = .systemYellow
+      $0.setImage(.init(systemName: "star"), for: .normal)
+    }
+    
     bookImageView.then {
       $0.contentMode = .scaleAspectFit
       $0.clipsToBounds = true
@@ -81,10 +89,11 @@ final class BookCell: UITableViewCell {
   }
   
   private func layout() {
-    addSubviews([
+    contentView.addSubviews([
       bookImageView,
       titleLabel,
-      infoStackView
+      infoStackView,
+      favoritesButton
     ])
     
     bookImageView.snp.makeConstraints {
@@ -102,6 +111,11 @@ final class BookCell: UITableViewCell {
       $0.top.equalTo(titleLabel.snp.bottom).inset(-8)
       $0.leading.equalTo(bookImageView.snp.trailing).inset(-8)
       $0.trailing.equalToSuperview().inset(8)
+    }
+    
+    favoritesButton.snp.makeConstraints {
+      $0.top.equalTo(bookImageView.snp.top).inset(10)
+      $0.trailing.equalTo(bookImageView.snp.trailing).inset(10)
     }
   }
   
