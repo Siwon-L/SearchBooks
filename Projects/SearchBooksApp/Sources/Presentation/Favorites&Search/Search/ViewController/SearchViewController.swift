@@ -77,7 +77,7 @@ final class SearchViewController: UIViewController {
       .disposed(by: disposeBag)
   
     selectionSortView.rx.sortButtonTap
-      .map { SearchReactor.Action.changeSort }
+      .map { SearchReactor.Action.sortButtonDidTap }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     
@@ -95,12 +95,13 @@ final class SearchViewController: UIViewController {
       .bind(to: selectionSortView.rx.countText)
       .disposed(by: disposeBag)
     
-    reactor.state.map { $0.books }
+    reactor.state.map { $0.items }
       .bind(to: booksTableView.rx.items(
         cellIdentifier: BookCell.identifier,
         cellType: BookCell.self
       )) { _, book, cell in
         cell.setContent(book: book)
+        
       }.disposed(by: disposeBag)
     
     reactor.state.map { $0.sort }

@@ -17,11 +17,11 @@ final class SearchReactor: Reactor {
   enum Action {
     case searchBooks(String)
     case loadNextPage(Int)
-    case changeSort
+    case sortButtonDidTap
   }
   
   enum Mutation {
-    case setSort
+    case changeSort
     case setBooks(Books, String)
     case addBooks(Books)
     case onError(Error)
@@ -30,7 +30,7 @@ final class SearchReactor: Reactor {
   
   struct State {
     var bookCount: Int = 0
-    var books: [Book] = []
+    var items: [Book] = []
     var sort: Sort = .sim
     var errorMessage: String? = nil
     fileprivate var query: String? = nil
@@ -68,14 +68,14 @@ final class SearchReactor: Reactor {
           .catch { .just(.onError($0)) },
         .just(.setLoading(false))
       ])
-    case .changeSort:
+    case .sortButtonDidTap:
       guard let query = currentState.query else { return .never() }
       let result = useCase.searchBooks(
         query: query,
         sort: currentState.sort == .sim ? .date : .sim
       )
       return Observable.concat([
-        .just(.setSort),
+        .just(.changeSort),
         result.map { Mutation.setBooks($0, query) }
           .catch { .just(.onError($0)) }
       ])
@@ -86,18 +86,18 @@ final class SearchReactor: Reactor {
     var newState = state
     newState.errorMessage = nil
     switch mutation {
-    case .setSort:
+    case .changeSort:
       newState.sort = newState.sort == .sim ? .date : .sim
       return newState
     case .setBooks(let books, let query):
-      newState.books = books.items
+      newState.items = books.items
       newState.bookCount = books.total
       newState.query = query
       newState.nextStart = books.start + books.display
       newState.display = books.display
       return newState
     case .addBooks(let books):
-      newState.books += books.items
+      newState.items += books.items
       newState.nextStart += books.display
       return newState
     case .setLoading(let isLoading):
