@@ -16,6 +16,7 @@ protocol SearchBookUseCaseable {
   func searchFavoritesBooks() -> Observable<[Book?]>
   func addFavoritesBook(isbn: String)
   func removeFavoritesBook(isbn: String)
+  func isFavorites(isbn: String) -> Bool
 }
 
 final class SearchBookUseCase: SearchBookUseCaseable {
@@ -48,5 +49,9 @@ final class SearchBookUseCase: SearchBookUseCaseable {
   
   func removeFavoritesBook(isbn: String) {
     repository.removeFavoritesBook(isbn: isbn)
+  }
+  
+  func isFavorites(isbn: String) -> Bool {
+    return repository.getFavoritesList().contains(isbn)
   }
 }
