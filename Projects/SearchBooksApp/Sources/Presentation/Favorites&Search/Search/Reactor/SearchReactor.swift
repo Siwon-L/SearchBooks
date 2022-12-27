@@ -84,6 +84,7 @@ final class SearchReactor: Reactor {
   
   func reduce(state: State, mutation: Mutation) -> State {
     var newState = state
+    newState.errorMessage = nil
     switch mutation {
     case .setSort:
       newState.sort = newState.sort == .sim ? .date : .sim
