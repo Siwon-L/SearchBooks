@@ -9,7 +9,7 @@
 import Foundation
 
 protocol FavoritesBookStoragable {
-  var getValue: [String] { get }
+  var getValue: Set<String> { get }
   func addValue(_ isbn: String)
   func removeValue(_ isbn: String)
 }
@@ -23,8 +23,9 @@ final class FavoritesBookStorage: FavoritesBookStoragable {
     self.key = key
   }
   
-  var getValue: [String] {
-    return (memory.array(forKey: key) ?? []).compactMap { $0 as? String }
+  var getValue: Set<String> {
+    let value = (memory.array(forKey: key) ?? []).compactMap { $0 as? String }
+    return Set(value)
   }
   
   func addValue(_ isbn: String) {
