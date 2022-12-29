@@ -40,7 +40,6 @@ final class BookCell: UITableViewCell {
     
     favoritesButton.then {
       $0.tintColor = .systemYellow
-      $0.setImage(.init(systemName: "star"), for: .normal)
       $0.addTarget(self, action: #selector(favoritesButtonAction), for: .touchUpInside)
     }
     
@@ -130,6 +129,10 @@ final class BookCell: UITableViewCell {
     publisherLabel.text = "출판사: \(book.publisher)"
     pubdateLabel.text = "출판일: \(book.pubdate)"
     discountLabel.text = "가격: \(book.discount)원"
+    let image = book.isFavorites ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
+    favoritesButton.setImage(image, for: .normal)
+  }
+  
   @objc
   private func favoritesButtonAction() {
     favoritesButtonDidTap()
