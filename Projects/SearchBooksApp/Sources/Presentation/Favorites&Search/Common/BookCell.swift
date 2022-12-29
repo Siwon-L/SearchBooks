@@ -23,6 +23,8 @@ final class BookCell: UITableViewCell {
   private let infoStackView = UIStackView()
   private let favoritesButton = UIButton()
   
+  var favoritesButtonDidTap: () -> Void = {}
+  
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
     attribute()
@@ -39,6 +41,7 @@ final class BookCell: UITableViewCell {
     favoritesButton.then {
       $0.tintColor = .systemYellow
       $0.setImage(.init(systemName: "star"), for: .normal)
+      $0.addTarget(self, action: #selector(favoritesButtonAction), for: .touchUpInside)
     }
     
     bookImageView.then {
@@ -127,5 +130,8 @@ final class BookCell: UITableViewCell {
     publisherLabel.text = "출판사: \(book.publisher)"
     pubdateLabel.text = "출판일: \(book.pubdate)"
     discountLabel.text = "가격: \(book.discount)원"
+  @objc
+  private func favoritesButtonAction() {
+    favoritesButtonDidTap()
   }
 }
