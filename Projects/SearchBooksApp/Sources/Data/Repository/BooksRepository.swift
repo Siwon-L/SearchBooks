@@ -40,6 +40,7 @@ final class BooksRepository: BooksRepositorable {
     return networkService.request(endpoint: endpoint)
       .decode(type: BooksDTO.self, decoder: decoder)
       .map { $0.toDomain }
+      .compactMap { [weak self] in self?.setFavorites(books: $0) }
   }
   
   func searchFavoritesBooks() -> Observable<[Book?]> {
@@ -84,6 +85,16 @@ extension BooksRepository {
         books.append(book)
       }
     })
+    return books
+  }
+  
+  private func setFavorites(books: Books) -> Books {
+    var books = books
+    books.items = books.items.map { book in
+      var book = book
+      book.isFavorites = favoritesBookStorage.getValue.contains(book.isbn)
+      return book
+    }
     return books
   }
 }
