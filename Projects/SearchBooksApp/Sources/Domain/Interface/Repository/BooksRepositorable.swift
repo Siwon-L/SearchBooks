@@ -15,5 +15,4 @@ protocol BooksRepositorable {
   func searchFavoritesBooks() -> Observable<[Book?]>
   func addFavoritesBook(isbn: String)
   func removeFavoritesBook(isbn: String)
-  func getFavoritesList() -> Set<String>
 }

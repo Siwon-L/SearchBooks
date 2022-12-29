@@ -63,10 +63,6 @@ final class BooksRepository: BooksRepositorable {
   func removeFavoritesBook(isbn: String) {
     favoritesBookStorage.removeValue(isbn)
   }
-  
-  func getFavoritesList() -> Set<String> {
-    return favoritesBookStorage.getValue
-  }
 }
 
 extension BooksRepository {
