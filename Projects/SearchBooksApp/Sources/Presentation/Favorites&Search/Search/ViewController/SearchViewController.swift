@@ -99,9 +99,15 @@ final class SearchViewController: UIViewController {
       .bind(to: booksTableView.rx.items(
         cellIdentifier: BookCell.identifier,
         cellType: BookCell.self
-      )) { _, book, cell in
+      )) { index, book, cell in
         cell.setContent(book: book)
-        
+        cell.favoritesButtonDidTap = { [weak self] in
+          guard let self = self else { return }
+          Observable.just((book.isbn, index))
+            .map { isbn, index in SearchReactor.Action.favoritesButtonDidTap(isbn, index) }
+            .bind(to: self.reactor.action)
+            .disposed(by: self.disposeBag)
+        }
       }.disposed(by: disposeBag)
     
     reactor.state.map { $0.sort }

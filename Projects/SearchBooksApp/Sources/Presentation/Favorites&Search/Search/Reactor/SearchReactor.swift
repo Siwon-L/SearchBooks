@@ -18,6 +18,7 @@ final class SearchReactor: Reactor {
     case searchBooks(String)
     case loadNextPage(Int)
     case sortButtonDidTap
+    case favoritesButtonDidTap(String, Int)
   }
   
   enum Mutation {
@@ -26,6 +27,7 @@ final class SearchReactor: Reactor {
     case addBooks(Books)
     case onError(Error)
     case setLoading(Bool)
+    case favoritesValue(Bool, Int)
   }
   
   struct State {
@@ -79,6 +81,15 @@ final class SearchReactor: Reactor {
         result.map { Mutation.setBooks($0, query) }
           .catch { .just(.onError($0)) }
       ])
+    case .favoritesButtonDidTap(let isbn, let index):
+      var newFavoriteValue = false
+      if currentState.items[index].isFavorites {
+        useCase.removeFavoritesBook(isbn: isbn)
+      } else {
+        useCase.addFavoritesBook(isbn: isbn)
+        newFavoriteValue = true
+      }
+      return .just(.favoritesValue(newFavoriteValue, index))
     }
   }
   
@@ -106,6 +117,9 @@ final class SearchReactor: Reactor {
     case .onError(let error):
       guard let error = error as? SearchServiceError else { return newState }
       newState.errorMessage = error.failureReason
+      return newState
+    case .favoritesValue(let isFavorites, let index):
+      newState.items[index].isFavorites = isFavorites
       return newState
     }
   }
