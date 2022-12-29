@@ -27,7 +27,7 @@ final class SearchBookUseCaseTest: XCTestCase {
   
   func test_searchBooks이_호출되었을_때_repository의_searchBooks가_호출되어야_한다() {
     // when
-    _ = sut.searchBooks(query: "Book")
+    _ = sut.searchBooks(query: "Book", sort: .sim)
     
     // then
     XCTAssertEqual(booksRepository.searchBooksCallCount, 1)

@@ -18,8 +18,8 @@ final class StubFavoritesBookStorage: FavoritesBookStoragable {
     self.isbns = isbns
   }
   
-  var getValue: [String] {
-    return isbns
+  var getValue: Set<String> {
+    return Set(isbns)
   }
   
   func addValue(_ isbn: String) {
