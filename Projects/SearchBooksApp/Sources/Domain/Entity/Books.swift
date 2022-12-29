@@ -10,7 +10,7 @@ import Foundation
 
 struct Books {
   let total: Int
-  let items: [Book]
+  var items: [Book]
   let start: Int
   let display: Int
 }

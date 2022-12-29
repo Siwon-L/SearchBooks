@@ -17,4 +17,5 @@ struct Book {
   let isbn: String
   let description: String
   let pubdate: String
+  var isFavorites: Bool = false
 }
