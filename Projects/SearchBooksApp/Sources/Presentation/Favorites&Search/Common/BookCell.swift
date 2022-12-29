@@ -102,20 +102,21 @@ final class BookCell: UITableViewCell {
       $0.height.equalTo(180)
     }
     
+    favoritesButton.snp.makeConstraints {
+      $0.top.trailing.equalToSuperview().inset(10)
+      $0.width.height.equalTo(30)
+    }
+    
     titleLabel.snp.makeConstraints {
       $0.leading.equalTo(bookImageView.snp.trailing).inset(-8)
-      $0.top.trailing.equalToSuperview().inset(8)
+      $0.top.equalToSuperview().inset(8)
+      $0.trailing.equalTo(favoritesButton.snp.leading).inset(-8)
     }
     
     infoStackView.snp.makeConstraints {
       $0.top.equalTo(titleLabel.snp.bottom).inset(-8)
       $0.leading.equalTo(bookImageView.snp.trailing).inset(-8)
       $0.trailing.equalToSuperview().inset(8)
-    }
-    
-    favoritesButton.snp.makeConstraints {
-      $0.top.equalTo(bookImageView.snp.top).inset(10)
-      $0.trailing.equalTo(bookImageView.snp.trailing).inset(10)
     }
   }
   
