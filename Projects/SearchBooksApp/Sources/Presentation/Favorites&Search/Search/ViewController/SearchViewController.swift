@@ -121,11 +121,4 @@ final class SearchViewController: UIViewController {
       .bind(to: showErrorAlert)
       .disposed(by: disposeBag)
   }
-  
-  private var showErrorAlert: Binder<String?> {
-    return Binder(self) { owner, message in
-      let alert = UIAlertController.makeAlert(message: message)
-      owner.present(alert, animated: true)
-    }
-  }
 }
