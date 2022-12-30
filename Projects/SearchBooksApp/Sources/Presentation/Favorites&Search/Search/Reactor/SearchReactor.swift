@@ -19,6 +19,7 @@ final class SearchReactor: Reactor {
     case loadNextPage(Int)
     case sortButtonDidTap
     case favoritesButtonDidTap(String, Int)
+    case changedFavoriteState(String)
   }
   
   enum Mutation {
@@ -90,6 +91,11 @@ final class SearchReactor: Reactor {
         useCase.addFavoritesBook(isbn: isbn)
         newFavoriteValue = true
       }
+      return .just(.favoritesValue(newFavoriteValue, index))
+    case .changedFavoriteState(let isbn):
+      let items = currentState.items
+      guard let index = items.firstIndex(where: { $0.isbn == isbn }) else { return .just(.none) }
+      var newFavoriteValue = !items[index].isFavorites
       return .just(.favoritesValue(newFavoriteValue, index))
     }
   }

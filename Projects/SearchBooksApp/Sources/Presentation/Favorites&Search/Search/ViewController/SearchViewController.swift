@@ -86,6 +86,12 @@ final class SearchViewController: UIViewController {
       .map { SearchReactor.Action.loadNextPage($0) }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
+    
+    NotificationCenter.default.rx.notification(.chagedFavoriteState)
+      .compactMap { $0.object as? String }
+      .map { isbn in SearchReactor.Action.changedFavoriteState(isbn) }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
   
   private func bindState(_ reactor: SearchReactor) {
