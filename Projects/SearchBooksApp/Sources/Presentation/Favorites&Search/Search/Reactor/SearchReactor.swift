@@ -28,6 +28,7 @@ final class SearchReactor: Reactor {
     case onError(Error)
     case setLoading(Bool)
     case favoritesValue(Bool, Int)
+    case none
   }
   
   struct State {
@@ -120,6 +121,8 @@ final class SearchReactor: Reactor {
       return newState
     case .favoritesValue(let isFavorites, let index):
       newState.items[index].isFavorites = isFavorites
+      return newState
+    case .none:
       return newState
     }
   }
