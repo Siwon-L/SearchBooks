@@ -80,7 +80,8 @@ final class FavoritesViewController: UIViewController {
           guard let self = self else { return }
           Observable.just((book.isbn, index))
             .map { isbn, index in
-              FavoritesReactor.Action.favoritesButtonDidTap(isbn, index)
+              NotificationCenter.default.post(name: .chagedFavoriteState, object: isbn)
+              return FavoritesReactor.Action.favoritesButtonDidTap(isbn, index)
             }
             .bind(to: self.reactor.action)
             .disposed(by: self.disposeBag)
