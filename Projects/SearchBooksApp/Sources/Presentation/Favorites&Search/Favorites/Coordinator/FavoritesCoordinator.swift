@@ -18,6 +18,12 @@ final class FavoritesCoordinator: Coordinator {
   }
   
   func start() {
-    
+    let favoritesBookStorage = FavoritesBookStorage()
+    let networkService = NetworkService()
+    let repository = BooksRepository(networkService: networkService, favoritesBookStorage: favoritesBookStorage)
+    let useCase = SearchBookUseCase(repository: repository)
+    let reactor = FavoritesReactor(useCase: useCase)
+    let searchViewController = FavoritesViewController(reactor: reactor)
+    navigationController.pushViewController(searchViewController, animated: true)
   }
 }
