@@ -24,6 +24,7 @@ final class SearchCoordinator: Coordinator {
     let useCase = SearchBookUseCase(repository: repository)
     let reactor = SearchReactor(useCase: useCase)
     let searchViewController = SearchViewController(reactor: reactor)
+    searchViewController.coordinator = self
     navigationController.pushViewController(searchViewController, animated: true)
   }
 }

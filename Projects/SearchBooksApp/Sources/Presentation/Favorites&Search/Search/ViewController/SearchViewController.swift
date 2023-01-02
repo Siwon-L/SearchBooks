@@ -19,6 +19,8 @@ final class SearchViewController: UIViewController {
   private let disposeBag = DisposeBag()
   private let reactor: SearchReactor
   
+  weak var coordinator: SearchCoordinator?
+  
   init(reactor: SearchReactor) {
     self.reactor = reactor
     super.init(nibName: nil, bundle: nil)
