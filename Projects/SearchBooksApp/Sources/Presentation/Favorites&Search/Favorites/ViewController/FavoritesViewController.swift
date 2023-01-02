@@ -17,6 +17,8 @@ final class FavoritesViewController: UIViewController {
   private let disposeBag = DisposeBag()
   private let reactor: FavoritesReactor
   
+  weak var coordinator: FavoritesCoordinator?
+  
   init(reactor: FavoritesReactor) {
     self.reactor = reactor
     super.init(nibName: nil, bundle: nil)

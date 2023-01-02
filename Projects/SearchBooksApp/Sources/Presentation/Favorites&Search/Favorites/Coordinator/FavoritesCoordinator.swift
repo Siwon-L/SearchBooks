@@ -24,6 +24,7 @@ final class FavoritesCoordinator: Coordinator {
     let useCase = SearchBookUseCase(repository: repository)
     let reactor = FavoritesReactor(useCase: useCase)
     let favoritesViewController = FavoritesViewController(reactor: reactor)
+    favoritesViewController.coordinator = self
     navigationController.pushViewController(favoritesViewController, animated: true)
   }
 }
