@@ -23,7 +23,7 @@ final class FavoritesCoordinator: Coordinator {
     let repository = BooksRepository(networkService: networkService, favoritesBookStorage: favoritesBookStorage)
     let useCase = SearchBookUseCase(repository: repository)
     let reactor = FavoritesReactor(useCase: useCase)
-    let searchViewController = FavoritesViewController(reactor: reactor)
-    navigationController.pushViewController(searchViewController, animated: true)
+    let favoritesViewController = FavoritesViewController(reactor: reactor)
+    navigationController.pushViewController(favoritesViewController, animated: true)
   }
 }
