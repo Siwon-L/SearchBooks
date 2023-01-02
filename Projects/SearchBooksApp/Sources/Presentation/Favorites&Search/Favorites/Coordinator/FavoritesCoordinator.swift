@@ -27,4 +27,11 @@ final class FavoritesCoordinator: Coordinator {
     favoritesViewController.coordinator = self
     navigationController.pushViewController(favoritesViewController, animated: true)
   }
+  
+  func showDetailView(book: Book) {
+    let detailCoordinator = DetailCoordinator(navigationController: navigationController)
+    childCoordinators.append(detailCoordinator)
+    detailCoordinator.parentCoordinator = self
+    detailCoordinator.start()
+  }
 }
