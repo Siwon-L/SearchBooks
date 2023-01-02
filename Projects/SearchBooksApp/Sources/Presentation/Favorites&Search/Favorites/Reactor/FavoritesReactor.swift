@@ -17,17 +17,20 @@ final class FavoritesReactor: Reactor {
   enum Action {
     case viewWillAppear
     case favoritesButtonDidTap(String, Int)
+    case itemSelected(IndexPath)
   }
   
   enum Mutation {
     case loadFavorites([Book])
     case onError(Error)
     case favoritesValue(Bool, Int)
+    case selectedBook(Book)
   }
   
   struct State {
     var items: [Book] = []
     var errorMessage: String? = nil
+    var selectedBook: Book? = nil
   }
   
   init(useCase: SearchBookUseCaseable) {
@@ -50,12 +53,15 @@ final class FavoritesReactor: Reactor {
         newFavoriteValue = true
       }
       return .just(.favoritesValue(newFavoriteValue, index))
+    case .itemSelected(let indexPath):
+      return .just(.selectedBook(currentState.items[indexPath.row]))
     }
   }
   
   func reduce(state: State, mutation: Mutation) -> State {
     var newState = state
     newState.errorMessage = nil
+    newState.selectedBook = nil
     switch mutation {
     case .loadFavorites(let items):
       newState.items = items
@@ -66,6 +72,9 @@ final class FavoritesReactor: Reactor {
       return newState
     case .favoritesValue(let isFavorites, let index):
       newState.items[index].isFavorites = isFavorites
+      return newState
+    case .selectedBook(let book):
+      newState.selectedBook = book
       return newState
     }
   }
