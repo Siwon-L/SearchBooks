@@ -94,6 +94,11 @@ final class SearchViewController: UIViewController {
       .map { isbn in SearchReactor.Action.changedFavoriteState(isbn) }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
+    
+    booksTableView.rx.itemSelected
+      .map { SearchReactor.Action.itemSelected($0) }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
   
   private func bindState(_ reactor: SearchReactor) {
@@ -128,5 +133,18 @@ final class SearchViewController: UIViewController {
       .filter { $0 != nil }
       .bind(to: showErrorAlert)
       .disposed(by: disposeBag)
+    
+    reactor.state.map { $0.selectedBook }
+      .compactMap { $0 }
+      .bind(to: showDetailView)
+      .disposed(by: disposeBag)
+  }
+}
+
+extension SearchViewController {
+  private var showDetailView: Binder<Book> {
+    return Binder(self) { owner, book in
+      owner.coordinator?.showDetailView(book: book)
+    }
   }
 }

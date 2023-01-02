@@ -20,6 +20,7 @@ final class SearchReactor: Reactor {
     case sortButtonDidTap
     case favoritesButtonDidTap(String, Int)
     case changedFavoriteState(String)
+    case itemSelected(IndexPath)
   }
   
   enum Mutation {
@@ -29,6 +30,7 @@ final class SearchReactor: Reactor {
     case onError(Error)
     case setLoading(Bool)
     case favoritesValue(Bool, Int)
+    case selectedBook(Book)
     case none
   }
   
@@ -37,6 +39,7 @@ final class SearchReactor: Reactor {
     var items: [Book] = []
     var sort: Sort = .sim
     var errorMessage: String? = nil
+    var selectedBook: Book? = nil
     fileprivate var query: String? = nil
     fileprivate var nextStart = 0
     fileprivate var display = 0
@@ -95,14 +98,16 @@ final class SearchReactor: Reactor {
     case .changedFavoriteState(let isbn):
       let items = currentState.items
       guard let index = items.firstIndex(where: { $0.isbn == isbn }) else { return .just(.none) }
-      var newFavoriteValue = !items[index].isFavorites
-      return .just(.favoritesValue(newFavoriteValue, index))
+      return .just(.favoritesValue(!items[index].isFavorites, index))
+    case .itemSelected(let indexPath):
+      return .just(.selectedBook(currentState.items[indexPath.row]))
     }
   }
   
   func reduce(state: State, mutation: Mutation) -> State {
     var newState = state
     newState.errorMessage = nil
+    newState.selectedBook = nil
     switch mutation {
     case .changeSort:
       newState.sort = newState.sort == .sim ? .date : .sim
@@ -127,6 +132,9 @@ final class SearchReactor: Reactor {
       return newState
     case .favoritesValue(let isFavorites, let index):
       newState.items[index].isFavorites = isFavorites
+      return newState
+    case .selectedBook(let book):
+      newState.selectedBook = book
       return newState
     case .none:
       return newState
