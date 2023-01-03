@@ -32,6 +32,6 @@ final class SearchCoordinator: Coordinator {
     let detailCoordinator = DetailCoordinator(navigationController: navigationController)
     childCoordinators.append(detailCoordinator)
     detailCoordinator.parentCoordinator = self
-    detailCoordinator.start()
+    detailCoordinator.start(book: book)
   }
 }

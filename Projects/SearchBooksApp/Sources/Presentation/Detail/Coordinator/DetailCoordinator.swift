@@ -17,8 +17,15 @@ final class DetailCoordinator: Coordinator {
     self.navigationController = navigationController
   }
   
-  func start() {
-    
+  func start(book: Book) {
+    let favoritesBookStorage = FavoritesBookStorage()
+    let networkService = NetworkService()
+    let repository = BooksRepository(networkService: networkService, favoritesBookStorage: favoritesBookStorage)
+    let useCase = SearchBookUseCase(repository: repository)
+    let reactor = DetailReactor(useCase: useCase, book: book)
+    let detailViewController = DetailViewController(reactor: reactor)
+    detailViewController.coordinator = self
+    navigationController.pushViewController(detailViewController, animated: true)
   }
   
   func removeCoordinator() {
