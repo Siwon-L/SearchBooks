@@ -43,9 +43,8 @@ final class DetailView: UIView {
     ])
     
     bookImageView.snp.makeConstraints {
-      $0.top.leading.bottom.equalToSuperview().inset(8)
       $0.height.equalTo(bookImageView.snp.width).multipliedBy(1.47)
-      $0.height.equalTo(300)
+      $0.height.equalTo(200)
     }
     
     scrollView.addSubviews([
@@ -60,12 +59,16 @@ final class DetailView: UIView {
     }
     
     infoStackView.snp.makeConstraints {
-      $0.top.trailing.leading.equalToSuperview()
+      $0.width.equalToSuperview().inset(8)
+      $0.top.equalToSuperview()
+      $0.centerX.equalToSuperview()
     }
     
     descriptionLable.snp.makeConstraints {
-      $0.top.equalTo(infoStackView.snp.bottom)
-      $0.leading.trailing.bottom.equalToSuperview()
+      $0.width.equalToSuperview().inset(8)
+      $0.top.equalTo(infoStackView.snp.bottom).offset(8)
+      $0.bottom.equalToSuperview()
+      $0.centerX.equalToSuperview()
     }
   }
   

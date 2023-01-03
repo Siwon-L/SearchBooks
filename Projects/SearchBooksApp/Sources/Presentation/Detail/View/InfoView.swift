@@ -31,7 +31,7 @@ final class InfoView: UIView {
   private func attribute() {
     stackView.then {
       $0.axis = .vertical
-      $0.spacing = 4
+      $0.spacing = 8
     }
     
     titleLabel.then {
