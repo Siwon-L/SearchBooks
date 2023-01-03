@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Book {
+struct Book: Equatable {
   let title: String
   let image: String
   let author: String
