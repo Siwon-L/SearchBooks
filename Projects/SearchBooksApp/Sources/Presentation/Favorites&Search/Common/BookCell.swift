@@ -49,19 +49,12 @@ final class BookCell: UITableViewCell {
     }
     
     infoStackView.then {
-      $0.addArrangedSubviews([
-        authorLabel,
-        publisherLabel,
-        pubdateLabel,
-        discountLabel
-      ])
       $0.axis = .vertical
       $0.spacing = 4
     }
     
     titleLabel.then {
       $0.numberOfLines = 2
-      $0.text = "Title"
       $0.font = .preferredFont(forTextStyle: .title3)
     }
     
@@ -91,6 +84,13 @@ final class BookCell: UITableViewCell {
   }
   
   private func layout() {
+    infoStackView.addArrangedSubviews([
+      authorLabel,
+      publisherLabel,
+      pubdateLabel,
+      discountLabel
+    ])
+    
     contentView.addSubviews([
       bookImageView,
       titleLabel,
