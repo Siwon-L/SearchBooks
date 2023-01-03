@@ -15,8 +15,12 @@ import SnapKit
 final class DetailViewController: UIViewController {
   private let mainView = DetailView()
   private let favoritesButton = UIBarButtonItem()
+  private let disposeBag = DisposeBag()
+  private let reactor: DetailReactor
+  weak var coordinator: DetailCoordinator?
   
-  init() {
+  init(reactor: DetailReactor) {
+    self.reactor = reactor
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -28,11 +32,13 @@ final class DetailViewController: UIViewController {
     super.viewDidLoad()
     attribute()
     layout()
-    bind()
+    bind(reactor)
   }
   
   private func attribute() {
     view.backgroundColor = .systemBackground
+    navigationItem.rightBarButtonItem = favoritesButton
+    favoritesButton.tintColor = .systemYellow
   }
   
   private func layout() {
@@ -42,16 +48,38 @@ final class DetailViewController: UIViewController {
     }
   }
   
-  private func bind() {
-    bindAction()
-    bindState()
+  private func bind(_ reactor: DetailReactor) {
+    bindAction(reactor)
+    bindState(reactor)
   }
   
-  private func bindAction() {
+  private func bindAction(_ reactor: DetailReactor) {
     
   }
   
-  private func bindState() {
+  private func bindState(_ reactor: DetailReactor) {
+    reactor.state.map { $0.item }
+      .distinctUntilChanged()
+      .bind(to: mainView.setContent)
+      .disposed(by: disposeBag)
     
+    reactor.state.map { $0.title }
+      .distinctUntilChanged()
+      .bind(to: navigationItem.rx.title)
+      .disposed(by: disposeBag)
+    
+    reactor.state.map { $0.isFavorites }
+      .distinctUntilChanged()
+      .bind(to: setFavoritesButtonImage)
+      .disposed(by: disposeBag)
+  }
+}
+
+extension DetailViewController {
+  private var setFavoritesButtonImage: Binder<Bool> {
+    return Binder(self) { owner, isFavorites in
+      let image = isFavorites ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
+      owner.favoritesButton.image = image
+    }
   }
 }
