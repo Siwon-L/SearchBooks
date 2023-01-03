@@ -9,6 +9,7 @@
 import UIKit
 
 import SnapKit
+import RxSwift
 import Kingfisher
 
 final class DetailView: UIView {
@@ -68,9 +69,11 @@ final class DetailView: UIView {
     }
   }
   
-  func setContent(book: Book) {
-    bookImageView.kf.setImage(with: URL(string: book.image))
-    infoView.setContent(book: book)
-    descriptionLable.text = book.description
+  var setContent: Binder<Book> {
+    return Binder(self) { owner, book in
+      owner.bookImageView.kf.setImage(with: URL(string: book.image))
+      owner.infoView.setContent(book: book)
+      owner.descriptionLable.text = book.description
+    }
   }
 }
