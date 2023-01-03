@@ -54,7 +54,16 @@ final class DetailViewController: UIViewController {
   }
   
   private func bindAction(_ reactor: DetailReactor) {
-    
+    favoritesButton.rx.tap
+      .map {
+        NotificationCenter.default.post(
+          name: .chagedFavoriteValue,
+          object: reactor.currentState.item.isbn
+        )
+        return DetailReactor.Action.favoritesButtonDidTap
+      }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
   }
   
   private func bindState(_ reactor: DetailReactor) {
