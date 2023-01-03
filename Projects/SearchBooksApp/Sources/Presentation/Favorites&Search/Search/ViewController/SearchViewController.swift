@@ -89,7 +89,7 @@ final class SearchViewController: UIViewController {
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     
-    NotificationCenter.default.rx.notification(.chagedFavoriteState)
+    NotificationCenter.default.rx.notification(.chagedFavoriteValue)
       .compactMap { $0.object as? String }
       .map { isbn in SearchReactor.Action.changedFavoriteState(isbn) }
       .bind(to: reactor.action)

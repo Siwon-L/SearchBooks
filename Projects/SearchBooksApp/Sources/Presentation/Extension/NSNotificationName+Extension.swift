@@ -10,5 +10,5 @@ import Foundation
 
 extension NSNotification.Name {
   static let viewWillAppear = NSNotification.Name("viewWillAppear")
-  static let chagedFavoriteState = NSNotification.Name("chagedFavoriteState")
+  static let chagedFavoriteValue = NSNotification.Name("chagedFavoriteState")
 }
