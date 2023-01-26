@@ -17,5 +17,5 @@ struct Book: Equatable {
   let isbn: String
   let description: String
   let pubdate: String
-  var isFavorites: Bool = true
+  var isFavorites: Bool = false
 }
