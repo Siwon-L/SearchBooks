@@ -16,6 +16,11 @@ SearchBooks는 Naver Search Api를 이용한 책 검색 어플입니다.
 
 ## 테스트
 
+![image](https://user-images.githubusercontent.com/91936941/214833209-c5d5dadf-c097-4120-ad2a-eb6d6811315d.png)
+
+View 관련 타입을 제외한 모든 타입에 대해 Unit Test를 진행하였습니다.
+
+또한, 타입간 의존성을 분리고, TestDouble 타입을 사용하여 타입별 독립된 Test를 진행하였습니다.
 
 ## 기술
 
