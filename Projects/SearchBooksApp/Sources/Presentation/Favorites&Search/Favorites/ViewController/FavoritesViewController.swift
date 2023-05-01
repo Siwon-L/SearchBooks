@@ -40,6 +40,11 @@ final class FavoritesViewController: UIViewController {
     NotificationCenter.default.post(name: .viewWillAppear, object: nil)
   }
   
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    NotificationCenter.default.post(name: .viewDidDisappear, object: nil)
+  }
+  
   private func attribute() {
     view.backgroundColor = .systemBackground
     navigationItem.title = "즐겨찾기"
@@ -66,6 +71,11 @@ final class FavoritesViewController: UIViewController {
   private func bindAction(_ reactor: FavoritesReactor) {
     NotificationCenter.default.rx.notification(.viewWillAppear)
       .map { _ in FavoritesReactor.Action.viewWillAppear }
+      .bind(to: reactor.action)
+      .disposed(by: disposeBag)
+    
+    NotificationCenter.default.rx.notification(.viewDidDisappear)
+      .map { _ in FavoritesReactor.Action.viewDidDisappear }
       .bind(to: reactor.action)
       .disposed(by: disposeBag)
     

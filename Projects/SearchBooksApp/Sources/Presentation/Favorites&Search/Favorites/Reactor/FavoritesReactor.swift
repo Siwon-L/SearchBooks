@@ -16,12 +16,14 @@ final class FavoritesReactor: Reactor {
   
   enum Action {
     case viewWillAppear
+    case viewDidDisappear
     case favoritesButtonDidTap(String, Int)
     case itemSelected(IndexPath)
   }
   
   enum Mutation {
     case loadFavorites([Book])
+    case reset
     case onError(Error)
     case favoritesValue(Bool, Int)
     case selectedBook(Book)
@@ -44,6 +46,8 @@ final class FavoritesReactor: Reactor {
       return useCase.searchFavoritesBooks()
         .map { Mutation.loadFavorites($0.compactMap { $0 }) }
         .catch { .just(.onError($0)) }
+    case .viewDidDisappear:
+      return .just(.reset)
     case .favoritesButtonDidTap(let isbn, let index):
       var newFavoriteValue = false
       if currentState.items[index].isFavorites {
@@ -65,6 +69,9 @@ final class FavoritesReactor: Reactor {
     switch mutation {
     case .loadFavorites(let items):
       newState.items = items
+      return newState
+    case .reset:
+      newState.items = []
       return newState
     case .onError(let error):
       guard let error = error as? SearchServiceError else { return newState }
