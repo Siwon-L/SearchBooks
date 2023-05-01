@@ -75,10 +75,12 @@ extension BooksRepository {
       for endpoint in endpoints {
         group.addTask { [weak self] in
           guard let data = try await self?.networkService.request(endpoint: endpoint) else { return nil }
-          guard let book = try? self?.decoder.decode(BooksDTO.self, from: data) else {
+          guard let bookDTO = try? self?.decoder.decode(BooksDTO.self, from: data) else {
             throw SearchServiceError.decode(reason: .decodeFailure(BooksDTO.self))
           }
-          return book.items.first?.toDomain
+          var book = bookDTO.items.first?.toDomain
+          book?.isFavorites = true
+          return book
         }
       }
       for try await book in group {
