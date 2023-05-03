@@ -53,7 +53,7 @@ final class FavoritesReactor: Reactor {
       if currentState.items[index].isFavorites {
         useCase.removeFavoritesBook(isbn: isbn)
       } else {
-        useCase.addFavoritesBook(isbn: isbn)
+        try! useCase.addFavoritesBook(isbn: isbn)
         newFavoriteValue = true
       }
       return .just(.favoritesValue(newFavoriteValue, index))

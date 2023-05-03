@@ -91,8 +91,15 @@ final class SearchReactor: Reactor {
       if currentState.items[index].isFavorites {
         useCase.removeFavoritesBook(isbn: isbn)
       } else {
-        useCase.addFavoritesBook(isbn: isbn)
-        newFavoriteValue = true
+        do {
+          try useCase.addFavoritesBook(isbn: isbn)
+          newFavoriteValue = true
+        } catch {
+          return .concat([
+            .just(.onError(error)),
+            .just(.favoritesValue(newFavoriteValue, index))
+          ])
+        }
       }
       return .just(.favoritesValue(newFavoriteValue, index))
     case .changedFavoriteState(let isbn):
@@ -127,6 +134,10 @@ final class SearchReactor: Reactor {
       newState.isLoding = isLoading
       return newState
     case .onError(let error):
+      if let error = error as? StorageError {
+        newState.errorMessage = error.localizedDescription
+        return newState
+      }
       guard let error = error as? SearchServiceError else { return newState }
       newState.errorMessage = error.failureReason
       return newState

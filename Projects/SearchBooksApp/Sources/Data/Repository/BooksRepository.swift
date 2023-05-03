@@ -57,8 +57,8 @@ final class BooksRepository: BooksRepositorable {
     }.asObservable()
   }
   
-  func addFavoritesBook(isbn: String) {
-    favoritesBookStorage.addValue(isbn)
+  func addFavoritesBook(isbn: String) throws {
+    try favoritesBookStorage.addValue(isbn)
   }
   
   func removeFavoritesBook(isbn: String) {

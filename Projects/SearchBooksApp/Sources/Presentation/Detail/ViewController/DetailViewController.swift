@@ -85,6 +85,11 @@ final class DetailViewController: UIViewController {
       .distinctUntilChanged()
       .bind(to: setFavoritesButtonImage)
       .disposed(by: disposeBag)
+    
+    reactor.state.map { $0.errorMessage }
+      .filter { $0 != nil }
+      .bind(to: showErrorAlert)
+      .disposed(by: disposeBag)
   }
 }
 

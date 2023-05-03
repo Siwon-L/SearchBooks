@@ -10,7 +10,7 @@ import Foundation
 
 protocol FavoritesBookStoragable {
   var getValue: Set<String> { get }
-  func addValue(_ isbn: String)
+  func addValue(_ isbn: String) throws
   func removeValue(_ isbn: String)
 }
 
@@ -28,8 +28,11 @@ final class FavoritesBookStorage: FavoritesBookStoragable {
     return Set(value)
   }
   
-  func addValue(_ isbn: String) {
+  func addValue(_ isbn: String) throws {
     var values = (memory.array(forKey: key) ?? []).compactMap { $0 as? String }
+    if values.count >= 10 {
+      throw StorageError.exceededNumberOfItems
+    }
     values.append(isbn)
     memory.set(values, forKey: key)
   }

@@ -20,12 +20,14 @@ final class DetailReactor: Reactor {
   
   enum Mutation {
     case favoritesValue(Bool)
+    case onError(Error)
   }
   
   struct State {
     var title: String
     var isFavorites: Bool
     var item: Book
+    var errorMessage: String? = nil
   }
   
   init(useCase: SearchBookUseCaseable, book: Book) {
@@ -44,8 +46,15 @@ final class DetailReactor: Reactor {
       if currentState.isFavorites {
         useCase.removeFavoritesBook(isbn: currentState.item.isbn)
       } else {
-        useCase.addFavoritesBook(isbn: currentState.item.isbn)
-        newFavoriteValue = true
+        do {
+          try useCase.addFavoritesBook(isbn: currentState.item.isbn)
+          newFavoriteValue = true
+        } catch {
+          return .concat([
+            .just(.onError(error)),
+            .just(.favoritesValue(newFavoriteValue))
+          ])
+        }
       }
       return .just(.favoritesValue(newFavoriteValue))
     }
@@ -53,9 +62,13 @@ final class DetailReactor: Reactor {
   
   func reduce(state: State, mutation: Mutation) -> State {
     var newState = state
+    newState.errorMessage = nil
     switch mutation {
     case .favoritesValue(let isFavorites):
       newState.isFavorites = isFavorites
+      return newState
+    case .onError(let error):
+      newState.errorMessage = error.localizedDescription
       return newState
     }
   }
